@@ -1,1 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos globales */
+html{
+    height: 100vh;
+}
+
+canvas {
+  display: block;
+  width: 90%;
+  height: 90%;
+  margin: auto;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  
+  // 🆕 Prevenir interpolación
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+img {
+    image-rendering: pixelated;
+    /* por compatibilidad con algunos navegadores */
+    image-rendering: crisp-edges;
+}
