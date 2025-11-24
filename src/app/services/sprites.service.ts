@@ -7,10 +7,15 @@ import { Sprite } from '../models/sprites/sprites.model';
 export class SpriteService {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
-  private sprites: Sprite[] = [];
+  private readonly sprites: Sprite[] = [];
   private animationId: number | null = null;
   private scaleSprite: number = 2;
   private readonly referenceWidth: number = 100;
+
+  // sacado de la web para que esto no explote
+  fps: number = 60;
+  interval: number = 1000 / this.fps;
+  lastTime: number = 0;
 
   init(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -54,8 +59,6 @@ export class SpriteService {
 
     // Calcular escala
     this.scaleSprite = width / this.referenceWidth;
-
-    //console.log('Canvas:', width, 'x', height, '| Scale:', this.scaleSprite);
   }
 
   addSprite(sprite: any) {
@@ -63,11 +66,19 @@ export class SpriteService {
   }
 
   start() {
-    const loop = () => {
-      this.update();
+    // Calculos maquiavelos que se me escapan de mi comprension honestamente
+    const loop = (time: number) => {
+      const delta = time - this.lastTime;
+
+      if (delta >= this.interval) {
+        this.lastTime = time - (delta % this.interval);
+        this.update();
+      }
+
       this.animationId = requestAnimationFrame(loop);
     };
-    loop();
+
+    this.animationId = requestAnimationFrame(loop);
   }
 
   update() {
@@ -102,7 +113,8 @@ export class SpriteService {
       const totalFrames = sprite.animationSprite[sprite.currentAnimation].frameImg.length;
 
       if (sprite.currentFrame >= totalFrames) {
-        sprite.currentFrame = 0; // loop
+        // loop
+        sprite.currentFrame = 0;
       }
     }
   }
@@ -113,5 +125,50 @@ export class SpriteService {
 
   getScale() {
     return this.scaleSprite;
+  }
+
+  getAnimationDuration(sprite: Sprite): number {
+    const totalFrames = sprite.animationSprite[sprite.currentAnimation].frameImg.length;
+    const frameSpeed = sprite.frameSpeed;
+    const fps = this.fps;
+    // segundos (Luego paso a mili o alkgo)
+    return (totalFrames * frameSpeed) / fps;
+  }
+
+  // para los click dentro del canva
+  changesAnimationClick(event: MouseEvent, animationId: number, endAnimationId: number = 0) {
+    if (!this.canvas) return;
+
+    const rect = this.canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    for (const sprite of this.sprites) {
+      const sx = sprite.x * this.scaleSprite;
+      const sy = sprite.y * this.scaleSprite;
+      const sw = sprite.width * this.scaleSprite;
+      const sh = sprite.height * this.scaleSprite;
+
+      // Para que no se sobreponga la misma animacion
+      if (animationId == sprite.currentAnimation) return;
+
+      if (x >= sx && x <= sx + sw && y >= sy && y <= sy + sh) {
+        console.log('Sprite clickeado:', sprite);
+
+        // Cambiar a la animacion clickeada
+        sprite.currentAnimation = animationId;
+        sprite.currentFrame = 0;
+
+        // Calcular cuánto durará
+        const duration = this.getAnimationDuration(sprite);
+
+        // Volver automaticamente a otra animacion (idle por defecto)
+        sprite.timeoutId = setTimeout(() => {
+          sprite.currentAnimation = endAnimationId;
+          sprite.currentFrame = 0;
+          sprite.timeoutId = null;
+        }, duration * 1000);
+      }
+    }
   }
 }
