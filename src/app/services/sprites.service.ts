@@ -2,6 +2,8 @@
 import { Injectable } from '@angular/core';
 // modelo
 import { Sprite } from '../models/sprites/sprites.model';
+// Servicios
+import { CollisionService } from './collision.service';
 
 @Injectable({ providedIn: 'root' })
 export class SpriteService {
@@ -16,6 +18,8 @@ export class SpriteService {
   fps: number = 60;
   interval: number = 1000 / this.fps;
   lastTime: number = 0;
+
+  constructor(private readonly collisionService: CollisionService) {}
 
   init(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -91,6 +95,8 @@ export class SpriteService {
       // obtener el frame actual
       const frame = sprite.animationSprite[sprite.currentAnimation].frameImg[sprite.currentFrame];
 
+      // Limitar con el tamaño del canvas
+      this.limitToCanvas(sprite);
       // dibujar frame actual
       this.ctx.drawImage(
         frame,
@@ -123,8 +129,28 @@ export class SpriteService {
     if (this.animationId) cancelAnimationFrame(this.animationId);
   }
 
+  limitToCanvas(sprite: Sprite) {
+    const realWidth = sprite.width * this.scaleSprite;
+    const realHeight = sprite.height * this.scaleSprite;
+
+    // Convertir limites reales a coordenadas internas del canvas
+    const maxX = (this.canvas.width - realWidth) / this.scaleSprite;
+    const maxY = (this.canvas.height - realHeight) / this.scaleSprite;
+
+    // Limitar dentro del canvas interno
+    if (sprite.x < 0) sprite.x = 0;
+    if (sprite.y < 0) sprite.y = 0;
+
+    if (sprite.x > maxX) sprite.x = maxX;
+    if (sprite.y > maxY) sprite.y = maxY;
+  }
+
   getScale() {
     return this.scaleSprite;
+  }
+
+  getCanvas() {
+    return this.canvas;
   }
 
   getAnimationDuration(sprite: Sprite): number {
@@ -140,20 +166,17 @@ export class SpriteService {
     if (!this.canvas) return;
 
     const rect = this.canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+
+    // Convertir click a coordenadas internas del canvas (Escalar me quita años de vida)
+    const x = (event.clientX - rect.left) / this.scaleSprite;
+    const y = (event.clientY - rect.top) / this.scaleSprite;
 
     for (const sprite of this.sprites) {
-      const sx = sprite.x * this.scaleSprite;
-      const sy = sprite.y * this.scaleSprite;
-      const sw = sprite.width * this.scaleSprite;
-      const sh = sprite.height * this.scaleSprite;
-
       // Para que no se sobreponga la misma animacion
-      if (animationId == sprite.currentAnimation) return;
+      if (animationId === sprite.currentAnimation) return;
 
-      if (x >= sx && x <= sx + sw && y >= sy && y <= sy + sh) {
-        console.log('Sprite clickeado:', sprite);
+      // collisionService debe trabajar en coordenadas internas
+      if (this.collisionService.isPointInsideSprite(sprite, x, y)) {
 
         // Cambiar a la animacion clickeada
         sprite.currentAnimation = animationId;
@@ -162,7 +185,7 @@ export class SpriteService {
         // Calcular cuánto durará
         const duration = this.getAnimationDuration(sprite);
 
-        // Volver automaticamente a otra animacion (idle por defecto) y ve el tipo para ejecutar mas o menos de una vez
+        // Volver automaticamente a otra animacion (idle por defecto)
         if (sprite.animationSprite[animationId].animationType == 'once') {
           sprite.timeoutId = setTimeout(() => {
             sprite.currentAnimation = endAnimationId;

@@ -1,6 +1,7 @@
 /* Estilos globales */
 html{
-    height: 100vh;
+    height: 100%;
+    min-height: 99vh;
 }
 
 canvas {
@@ -13,7 +14,7 @@ canvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   
-  // 🆕 Prevenir interpolación
+  // Prevenir interpolación
   -ms-interpolation-mode: nearest-neighbor;
 }
 

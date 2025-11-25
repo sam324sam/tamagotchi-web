@@ -17,39 +17,18 @@ export class PetView implements AfterViewInit {
   constructor(
     private readonly spriteService: SpriteService,
     private readonly petService: PetService
-  ) {
-    petService.initPetService('assets/pet/pet.png');
-  }
+  ) {}
 
-  // Para los eventos del boton
-  pressTimer: number | null = null;
-  isLongPress = false;
-  LONG_PRESS = 500;
+  onCanvasClickDown(event: MouseEvent) {
+    this.petService.handlePressDown(event);
+  }
 
   onCanvasClickUp(event: MouseEvent) {
-    if (this.pressTimer) clearTimeout(this.pressTimer);
-    // volver al tutsitutsi
-    this.petService.pet.isGrab = false;
-    this.spriteService.changesAnimationClick(event, 'tutsitutsi');
-    
+    this.petService.handlePressUp(event);
   }
 
-  // iniciar timer para ver si se pasa x tiempo para agarrar
-  onCanvasClickDown(event: MouseEvent) {
-    this.isLongPress = false;
-
-    this.pressTimer = globalThis.setTimeout(() => {
-      this.isLongPress = true;
-      this.spriteService.changesAnimationClick(event, 'grab');
-      this.petService.pet.isGrab = true;
-    }, this.LONG_PRESS);
-  }
-
-  // Al mover el mouse
   onMouseMove(event: MouseEvent) {
-    if (this.petService.pet.isGrab) {
-      this.petService.movePet(this.spriteService.getScale(), event);
-    }
+    this.petService.handleMouseMove(event);
   }
 
   ngAfterViewInit(): void {
@@ -61,7 +40,7 @@ export class PetView implements AfterViewInit {
     // Ahora centrar sí funciona porque width/height son correctos
     // Ahora que init ha terminado, ya puedes centrar correctamente
     this.centerPet();
-
+    this.petService.initPetService('assets/pet/pet.png', this.spriteService.getScale());
     this.spriteService.addSprite(this.petService.sprite);
     this.spriteService.start();
   }

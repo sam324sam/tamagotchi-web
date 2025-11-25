@@ -31,7 +31,9 @@
             ],
             "styles": [
               "src/styles.scss"
-            ]
+            ],
+            "outputPath": "dist/tamagotchi-web",
+            "baseHref": "/tamagotchi-web/"
           },
           "configurations": {
             "production": {
@@ -91,6 +93,9 @@
               "src/styles.scss"
             ]
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }

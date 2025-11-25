@@ -3,7 +3,10 @@ import { Injectable } from '@angular/core';
 import { Sprite } from '../models/sprites/sprites.model';
 import { Pet } from '../models/pet/pet.model';
 import { AnimationSprite, AnimationType } from '../models/sprites/animationSprite.model';
-import { ReactiveFormsModule } from '@angular/forms';
+// Servicios
+import { CollisionService } from './collision.service';
+import { SpriteService } from './sprites.service';
+
 @Injectable({ providedIn: 'root' })
 export class PetService {
   private readonly animations = [
@@ -34,6 +37,7 @@ export class PetService {
     width: 32,
     height: 32,
     animationSprite: {},
+    scale: 1,
 
     currentAnimation: 'idle',
     currentFrame: 0,
@@ -48,8 +52,19 @@ export class PetService {
     isGrab: false,
   };
 
-  initPetService(petImg: string) {
+  private pressTimer: any = null;
+  private readonly LONG_PRESS = 500;
+  private pointerOffsetX = 0;
+  private pointerOffsetY = 0;
+
+  constructor(
+    private readonly collisionService: CollisionService,
+    private readonly spriteService: SpriteService
+  ) {}
+
+  initPetService(petImg: string, scale: number) {
     this.sprite.img.src = petImg;
+    this.sprite.scale = scale;
     this.loadAnimations();
   }
 
@@ -76,18 +91,63 @@ export class PetService {
 
   getMousePos(scale: number, evt: MouseEvent) {
     const rect = (evt.target as HTMLCanvasElement).getBoundingClientRect();
-
+    console.log('Escala del sprite', scale);
     return {
-      x: ((evt.clientX - rect.left) / scale) - 15,
-      y: ((evt.clientY - rect.top) / scale) - 15,
+      x: (evt.clientX - rect.left) / scale,
+      y: (evt.clientY - rect.top) / scale,
     };
   }
 
-  movePet(scale: number, event: MouseEvent) {
+  handlePressDown(event: MouseEvent) {
+    const scale = this.spriteService.getScale();
+    const rect = this.spriteService.getCanvas().getBoundingClientRect();
+    const mx = (event.clientX - rect.left) / scale;
+    const my = (event.clientY - rect.top) / scale;
+    // no iniciar timer si no esta sobre la mascota
+    if (!this.collisionService.isPointInsideSprite(this.pet.sprite, mx, my)) {
+      
+      return;
+    }
+
+    this.clearPressTimer();
+    this.pressTimer = setTimeout(() => {
+      this.pet.isGrab = true;
+      // guardar offset relativo para que el sprite no "salte" al puntero
+      this.pointerOffsetX = event.clientX - rect.left - this.pet.sprite.x * scale;
+      this.pointerOffsetY = event.clientY - rect.top - this.pet.sprite.y * scale;
+      this.spriteService.changesAnimationClick(event, 'grab');
+    }, this.LONG_PRESS);
+  }
+
+  handlePressUp(event: MouseEvent) {
+    this.clearPressTimer();
+
+    this.pet.isGrab = false;
+
+    this.spriteService.changesAnimationClick(event, 'tutsitutsi');
+  }
+
+  handleMouseMove(event: MouseEvent) {
     if (!this.pet.isGrab) return;
 
-    const pos = this.getMousePos(scale, event);
-    this.pet.sprite.x = pos.x;
-    this.pet.sprite.y = pos.y;
+    const canvas = this.spriteService.getCanvas();
+
+    const newX = (event.offsetX - this.pointerOffsetX) / this.pet.sprite.scale;
+    const newY = (event.offsetY - this.pointerOffsetY) / this.pet.sprite.scale;
+
+    const maxX =
+      (canvas.width - this.pet.sprite.width * this.pet.sprite.scale) / this.pet.sprite.scale;
+    const maxY =
+      (canvas.height - this.pet.sprite.height * this.pet.sprite.scale) / this.pet.sprite.scale;
+
+    this.pet.sprite.x = Math.max(0, Math.min(newX, maxX));
+    this.pet.sprite.y = Math.max(0, Math.min(newY, maxY));
+  }
+
+  clearPressTimer() {
+    if (this.pressTimer) {
+      clearTimeout(this.pressTimer);
+      this.pressTimer = null;
+    }
   }
 }

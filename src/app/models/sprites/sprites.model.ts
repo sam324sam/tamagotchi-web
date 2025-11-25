@@ -5,6 +5,7 @@ export interface Sprite {
   y: number;
   width: number;
   height: number;
+  scale: number;
   // imagen base opcional
   img: HTMLImageElement;
   animationSprite: Record<string, AnimationSprite>;
