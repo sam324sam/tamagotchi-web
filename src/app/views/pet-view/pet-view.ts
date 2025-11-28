@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 
 // Service
+import { GameLoopService } from '../../services/game-loop.service';
 import { SpriteService } from '../../services/sprites.service';
 import { PetService } from '../../services/pet.service';
 import { CursorService } from '../../services/cursor.service';
@@ -21,7 +22,8 @@ export class PetView implements AfterViewInit {
     private readonly spriteService: SpriteService,
     private readonly petService: PetService,
     private readonly cursorService: CursorService,
-    private readonly petIaService: PetIaService
+    private readonly petIaService: PetIaService,
+    private readonly gameLoopService: GameLoopService,
   ) {}
 
   onCanvasClickDown(event: MouseEvent) {
@@ -52,7 +54,7 @@ export class PetView implements AfterViewInit {
     this.centerPet();
     this.petService.initPetService('assets/pet/pet.png', this.spriteService.getScale());
     this.spriteService.addSprite(this.petService.sprite);
-    this.spriteService.start();
+    this.gameLoopService.start()
   }
 
   private centerPet() {

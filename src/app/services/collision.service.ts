@@ -21,6 +21,6 @@ export class CollisionService {
 
     if (x + width > canvas.width) return true; // derecha
     if (y + height > canvas.height) return true; // abajo
-    return false; // no hay colisión
+    return false; // no hay colision
   }
 }

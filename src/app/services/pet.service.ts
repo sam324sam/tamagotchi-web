@@ -6,6 +6,7 @@ import { AnimationSprite, AnimationType } from '../models/sprites/animationSprit
 // Servicios
 import { CollisionService } from './collision.service';
 import { SpriteService } from './sprites.service';
+import { AnimationService } from './animation.service';
 
 @Injectable({ providedIn: 'root' })
 export class PetService {
@@ -97,7 +98,8 @@ export class PetService {
 
   constructor(
     private readonly collisionService: CollisionService,
-    private readonly spriteService: SpriteService
+    private readonly spriteService: SpriteService,
+    private readonly animationService: AnimationService
   ) {}
 
   initPetService(petImg: string, scale: number) {
@@ -139,10 +141,8 @@ export class PetService {
   handlePressDown(event: MouseEvent) {
     const scale = this.spriteService.getScale();
     const rect = this.spriteService.getCanvas().getBoundingClientRect();
-    const mx = (event.clientX - rect.left) / scale;
-    const my = (event.clientY - rect.top) / scale;
     // no iniciar timer si no esta sobre la mascota
-    if (!this.collisionService.isPointInsideSprite(this.pet.sprite, mx, my)) {
+    if (!this.isPetPresed(event)) {
       return;
     }
     this.clearPressTimer();
@@ -151,21 +151,35 @@ export class PetService {
       // guardar offset relativo para que el sprite no "salte" al puntero
       this.pointerOffsetX = event.clientX - rect.left - this.pet.sprite.x * scale;
       this.pointerOffsetY = event.clientY - rect.top - this.pet.sprite.y * scale;
-      this.spriteService.changesAnimationClick(event, 'grab');
+      if (
+        this.collisionService.isPointInsideSprite(
+          this.pet.sprite,
+          this.pointerOffsetX,
+          this.pointerOffsetY
+        )
+      ) {
+        this.pet.sprite.currentAnimation = 'grab';
+        this.pet.sprite.currentFrame = 0;
+      }
     }, this.LONG_PRESS);
   }
 
   handlePressUp(event: MouseEvent) {
     this.clearPressTimer();
 
+    if (!this.isPetPresed(event)) {
+      return;
+    }
+
     this.pet.isGrab = false;
 
-    this.spriteService.changesAnimationClick(event, 'tutsitutsi');
+    this.pet.sprite.currentAnimation = 'tutsitutsi';
+    this.pet.sprite.currentFrame = 0;
     // desactivar movimiento hasta que tutsi tutsi se acabe
     this.pet.blockMove = true;
     setTimeout(() => {
       this.pet.blockMove = false;
-    }, this.spriteService.getAnimationDuration(this.pet.sprite));
+    }, this.animationService.getAnimationDuration(this.pet.sprite));
   }
 
   handleMouseMove(event: MouseEvent) {
@@ -192,6 +206,15 @@ export class PetService {
     }
   }
 
+  isPetPresed(event: MouseEvent){
+    // pasar a cordenadas del canvas
+    const scale = this.spriteService.getScale();
+    const rect = this.spriteService.getCanvas().getBoundingClientRect();
+    const mx = (event.clientX - rect.left) / scale;
+    const my = (event.clientY - rect.top) / scale;
+    return this.collisionService.isPointInsideSprite(this.pet.sprite, mx, my);
+  }  
+
   // Para el manejo de las animaciones dentro del petService para el movimiento
   setAnimation(name: string) {
     // si la animacion no existe no hacer nada
@@ -209,6 +232,6 @@ export class PetService {
   }
 
   getAnimationDuration(animationName: string): number {
-    return this.spriteService.getAnimationDurationFrames(this.pet.sprite, animationName);
+    return this.animationService.getAnimationDurationFrames(this.pet.sprite, animationName);
   }
 }
