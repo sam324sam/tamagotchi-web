@@ -8,6 +8,11 @@ import { ConfigurationModal } from '../configuration-modal/configuration-modal';
   standalone: true,
 })
 export class Header {
+  isOpenHeader: boolean = true;
+  toggleHeader(event: Event) {
+    event.preventDefault(); // Evita que el # cambie la URL
+    this.isOpenHeader = !this.isOpenHeader;
+  }
   isOpenConfiguration: boolean = false;
   toggleConfiguration(event: Event) {
     event.preventDefault(); // Evita que el # cambie la URL
@@ -17,6 +22,4 @@ export class Header {
   handleModalToggle(isOpen: boolean) {
     this.isOpenConfiguration = isOpen;
   }
-
-  
 }

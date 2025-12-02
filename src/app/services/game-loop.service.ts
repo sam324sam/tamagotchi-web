@@ -4,12 +4,15 @@ import { CollisionService } from './collision.service';
 import { PetService } from './pet.service';
 import { SpriteService } from './sprites.service';
 import { AnimationService } from './animation.service';
+
 @Injectable({
   providedIn: 'root',
 })
 export class GameLoopService {
   private lastTime = 0;
   private running = false;
+  // Para el loop
+  private frameId: number | null = null;
 
   constructor(
     private readonly petService: PetService,
@@ -19,21 +22,35 @@ export class GameLoopService {
   ) {}
 
   start() {
+    // Evitar el doble loop
     if (this.running) return;
     this.running = true;
-    requestAnimationFrame(this.loop.bind(this));
+    this.frameId = requestAnimationFrame(this.loop.bind(this));
+  }
+
+  stop() {
+    this.running = false;
+    // Cancelar lo que se este ejecutando en ese momento
+    if (this.frameId !== null) {
+      cancelAnimationFrame(this.frameId);
+      this.frameId = null;
+    }
+    // resetear para el delta al restablecer el servicio
+    this.lastTime = 0;
   }
 
   private loop(time: number) {
     if (!this.running) return;
 
-    const delta = time - this.lastTime;
+    let delta = time - this.lastTime;
     this.lastTime = time;
+    // capar el delta para que no se pase de 100ms
+    delta = Math.min(delta, 100);
 
     this.update(delta);
     this.render();
 
-    requestAnimationFrame(this.loop.bind(this));
+    this.frameId = requestAnimationFrame(this.loop.bind(this));
   }
 
   private update(delta: number) {

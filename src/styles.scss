@@ -51,4 +51,10 @@ img {
     image-rendering: crisp-edges;
 }
 
-
+/*Cajita epica*/ 
+.pixel-box {
+  border: 16px solid transparent;
+  border-image: url('/assets/icon/UI/border.png') 16 fill round;
+  image-rendering: pixelated;
+  border-radius: 1em;
+}

@@ -14,11 +14,6 @@ export class SpriteService {
   private scaleSprite: number = 1;
   private readonly referenceWidth: number = 200;
 
-  // sacado de la web para que esto no explote
-  fps: number = 60;
-  interval: number = 1000 / this.fps;
-  lastTime: number = 0;
-
   constructor(
     private readonly collisionService: CollisionService,
     private readonly animationService: AnimationService
@@ -37,9 +32,6 @@ export class SpriteService {
 
     // Ajustar tamaño inicial
     this.resizeCanvas();
-
-    // Escuchar cambios de ventana para mantener responsive
-    window.addEventListener('resize', () => this.resizeCanvas());
   }
 
   private resizeCanvas() {

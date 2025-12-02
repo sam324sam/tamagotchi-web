@@ -48,6 +48,13 @@ export class DataService {
         frameCounter: 0,
         timeoutId: null,
       },
+
+      stats: {
+        hunger: 100,
+        energy: 100,
+        happiness: 100,
+        hygiene: 100,
+      }
     };
 
     // Animaciones literales

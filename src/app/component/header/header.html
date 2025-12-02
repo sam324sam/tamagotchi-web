@@ -1,4 +1,5 @@
-<header class=" text-slate-800 py-6 px-6 flex justify-between items-center cursor-auto">
+@if (isOpenHeader) {
+<header class="text-slate-50 py-6 px-6 flex justify-between items-center cursor-auto bg-slate-700">
   <h1 class="text-4xl font-semibold select-none">Tamagotchi Web</h1>
 
   <nav class="flex gap-4 items-center">
@@ -6,11 +7,21 @@
       href="#"
       class="hover:scale-110 transition-transform duration-200"
       (click)="toggleConfiguration($event)"
-      >
+    >
       <img src="assets/icon/configuration.png" alt="Config" class="w-16 h-16 select-none" />
     </a>
   </nav>
 </header>
+}
+
+<button class="w-full bg-black flex justify-center relative" (click)="toggleHeader($event)">
+  <img
+    src="assets/icon/UI/desplegable-button.png"
+    alt="Config"
+    class="w-32 h-16 select-none -mb-11"
+  />
+</button>
+
 <app-configuration-modal
   [isOpenConfiguration]="isOpenConfiguration"
   (toggleConfiguration)="handleModalToggle($event)"

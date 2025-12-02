@@ -170,12 +170,7 @@ export class PetIaService {
       this.targetDistance = Math.floor(framesInAnimation * this.speed);
       this.movedDistance = 0;
 
-      console.log(
-        `Intentando ${dir}: ${animDurationMs}ms = ${Math.round(framesInAnimation)} frames = ${
-          this.targetDistance
-        }px`
-      );
-
+      // ver a veces falla
       if (this.canMoveFullAnimation(pet, dir)) {
         this.direction = dir;
         this.moving = true;
