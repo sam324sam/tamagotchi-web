@@ -52,7 +52,7 @@ export class PetService {
     }
   }
 
-  movePet(dx:number, dy: number){
+  movePet(dx: number, dy: number) {
     this.pet.sprite.x += dx;
     this.pet.sprite.y += dy;
   }
@@ -123,12 +123,11 @@ export class PetService {
   handlePressUp(event: MouseEvent) {
     this.clearPressTimer();
 
+    this.pet.isGrab = false;
     if (!this.isPetPresed(event)) {
       return;
     }
-
-    this.pet.isGrab = false;
-
+    
     this.pet.sprite.currentAnimation = 'tutsitutsi';
     this.pet.sprite.currentFrame = 0;
     this.pet.blockMove = true;

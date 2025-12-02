@@ -8,7 +8,8 @@ export class PetIaService {
 
   private moving = false;
   private direction: 'left' | 'right' | 'up' | 'down' | 'idle' = 'idle';
-  private readonly speed = 1; // pixeles por frame (60fps aprox)
+  // pixeles por frame
+  private readonly speed = 1; 
 
   private targetDistance = 0;
   private movedDistance = 0;
@@ -80,7 +81,7 @@ export class PetIaService {
       return;
     }
 
-    console.log('se mueve', this.direction, dx, dy);
+    // se mueve le llama al metod de pet
     movePet(dx, dy);
     this.movedDistance += Math.abs(dx) + Math.abs(dy);
 
@@ -89,10 +90,10 @@ export class PetIaService {
     }
   }
 
+  // Detener el movimiento
   private stop() {
     this.moving = false;
     this.direction = 'idle';
-    console.log('Movimiento detenido');
   }
 
   private canMoveFullAnimation(pet: Pet, direction: 'left' | 'right' | 'up' | 'down'): boolean {
@@ -129,12 +130,6 @@ export class PetIaService {
       this.canvas
     );
 
-    console.log(
-      `Verificando ${direction}: actual (${Math.round(sprite.x)}, ${Math.round(
-        sprite.y
-      )}) -> final (${Math.round(finalX)}, ${Math.round(finalY)}), puede: ${canMove}`
-    );
-
     return canMove;
   }
 
@@ -161,7 +156,7 @@ export class PetIaService {
     setAnimation: (dir: string) => void
   ) {
     if (Math.random() < 0.5) {
-      console.log('Decidio no moverse esta vez');
+      // Decidio no moverse
       return;
     }
 
@@ -185,11 +180,9 @@ export class PetIaService {
         this.direction = dir;
         this.moving = true;
         setAnimation(dir);
-        console.log('¡Movimiento iniciado!');
         return;
       }
     }
-
-    console.log('No se encontro ninguna direccion valida');
+    //No se encontro ninguna direccion valida
   }
 }
