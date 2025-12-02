@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { ConfigurationModal } from '../configuration-modal/configuration-modal';
+import { NgClass } from '@angular/common';
 @Component({
   selector: 'app-header',
-  imports: [ConfigurationModal],
+  imports: [ConfigurationModal, NgClass],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   standalone: true,
