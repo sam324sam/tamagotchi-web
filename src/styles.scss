@@ -1,13 +1,13 @@
 @font-face {
   font-family: 'upheavtt';
-  src: url('/assets/fonts/upheavtt.ttf') format('truetype');
+  src: url('assets/fonts/upheavtt.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 // Cursor
 * {
-  cursor: url("/assets/cursor/cursor.png") 16 16, auto;
+  cursor: url("assets/cursor/cursor.png") 16 16, auto;
 }
 
 button, 
@@ -18,12 +18,12 @@ option,
 input[type="button"],
 input[type="submit"],
 .clickable {
-  cursor: url("/assets/cursor/cursor-pointer.png") 16 16, pointer !important;
+  cursor: url("assets/cursor/cursor-pointer.png") 16 16, pointer !important;
 }
 
 .draggable,
 [draggable="true"] {
-  cursor: url("/assets/cursor/cursor-grab.png") 16 16, grab !important;
+  cursor: url("assets/cursor/cursor-grab.png") 16 16, grab !important;
 }
 
 body{
