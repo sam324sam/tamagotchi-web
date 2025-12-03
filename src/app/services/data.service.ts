@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Pet } from '../models/pet/pet.model';
-import { Sprite } from '../models/sprites/sprites.model';
 import { Color } from '../models/sprites/color.model';
 import { AnimationSet } from '../models/sprites/animation-set.model';
 import { AnimationType } from '../models/sprites/animationSprite.model';
@@ -45,7 +44,7 @@ export class DataService {
         currentAnimation: 'idle',
         currentFrame: 0,
         frameSpeed: 100,
-        frameCounter: 0,
+        frameCounter: 0, 
         timeoutId: null,
       },
 
