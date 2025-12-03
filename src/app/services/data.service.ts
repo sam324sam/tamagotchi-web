@@ -8,14 +8,14 @@ import { AnimationType } from '../models/sprites/animationSprite.model';
 export class DataService {
   // Colores predefinidos
   readonly colors: Color[] = [
-    { name: 'azul suave', color: 'rgba(80, 120, 255, 0.25)' },
-    { name: 'rojo suave', color: 'rgba(255, 80, 80, 0.25)' },
-    { name: 'verde suave', color: 'rgba(80, 255, 150, 0.25)' },
-    { name: 'amarillo suave', color: 'rgba(255, 230, 80, 0.25)' },
-    { name: 'naranja suave', color: 'rgba(255, 150, 80, 0.25)' },
-    { name: 'morado suave', color: 'rgba(180, 80, 255, 0.25)' },
-    { name: 'blanco suave', color: 'rgba(255, 255, 255, 0.15)' },
-    { name: 'gris suave', color: 'rgba(120, 120, 120, 0.15)' },
+    { name: 'Azul suave', color: 'rgba(80, 120, 255, 0.25)' },
+    { name: 'Rojo suave', color: 'rgba(255, 80, 80, 0.25)' },
+    { name: 'Verde suave', color: 'rgba(80, 255, 150, 0.25)' },
+    { name: 'Amarillo suave', color: 'rgba(255, 230, 80, 0.25)' },
+    { name: 'Naranja suave', color: 'rgba(255, 150, 80, 0.25)' },
+    { name: 'Morado suave', color: 'rgba(180, 80, 255, 0.25)' },
+    { name: 'Blanco suave', color: 'rgba(255, 255, 255, 0.15)' },
+    { name: 'Gris suave', color: 'rgba(120, 120, 120, 0.15)' },
   ];
 
   pet: Pet = {} as Pet;
@@ -44,16 +44,37 @@ export class DataService {
         currentAnimation: 'idle',
         currentFrame: 0,
         frameSpeed: 100,
-        frameCounter: 0, 
+        frameCounter: 0,
         timeoutId: null,
       },
 
-      stats: {
-        hunger: 100,
-        energy: 100,
-        happiness: 100,
-        hygiene: 100,
-      }
+      // El decay baja con porcentaje es decir si es = 1 baja un 1% por segund
+      stats: [
+        {
+          name: 'hunger',
+          decay: 0.03,
+          porcent: 100,
+          active: true,
+        },
+        {
+          name: 'energy',
+          decay: 0.02,
+          porcent: 100,
+          active: true,
+        },
+        {
+          name: 'happiness',
+          decay: 0.04,
+          porcent: 100,
+          active: true,
+        },
+        {
+          name: 'hygiene',
+          decay: 0.01,
+          porcent: 100,
+          active: true,
+        },
+      ],
     };
 
     // Animaciones literales

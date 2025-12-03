@@ -6,5 +6,5 @@ export interface Pet {
   isGrab: boolean;
   blockMove: boolean;
   
-  stats: Stats;
+  stats: Stats[];
 }

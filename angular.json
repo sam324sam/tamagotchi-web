@@ -34,7 +34,7 @@
               "src/styles.scss"
             ],
             "outputPath": "dist/tamagotchi-web",
-            "baseHref": "/"
+            "baseHref": "/tamagotchi-web/"
           },
           "configurations": {
             "production": {

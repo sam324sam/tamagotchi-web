@@ -1,0 +1,16 @@
+<div class="flex w-full justify-center gap-3 pb-5">
+  @for (stat of getStats(); track $index) {
+  <div
+    class="bg-white aspect-square w-1/6 h-full p-3 pixel-box flex flex-col items-center justify-center"
+    [style.background-color]="getColor(stat.porcent)"
+  >
+    <img
+      [src]="'/assets/icon/stats/' + stat.name + '.png'"
+      [alt]="stat.name"
+      class="w-full h-full object-contain"
+    />
+
+    <span>{{ roundStat(stat.porcent) }}%</span>
+  </div>
+  }
+</div>

@@ -40,7 +40,7 @@ export class PetService {
     private readonly petIaService: PetIaService
   ) {}
 
-  update() {
+  update(delta: number) {
     if (this.activeIa) {
       this.petIaService.update(
         this.pet,
@@ -50,6 +50,7 @@ export class PetService {
         (dx, dy) => this.movePet(dx, dy)
       );
     }
+    this.updateStats(delta);
   }
 
   movePet(dx: number, dy: number) {
@@ -127,7 +128,7 @@ export class PetService {
     if (!this.isPetPresed(event)) {
       return;
     }
-    
+
     this.pet.sprite.currentAnimation = 'tutsitutsi';
     this.pet.sprite.currentFrame = 0;
     this.pet.blockMove = true;
@@ -157,6 +158,7 @@ export class PetService {
     this.pet.sprite.y = clampedY;
   }
 
+  // quitar el timer al parar de precionar
   clearPressTimer() {
     if (this.pressTimer) {
       clearTimeout(this.pressTimer);
@@ -164,6 +166,7 @@ export class PetService {
     }
   }
 
+  // Cuando es precionada la mascta
   isPetPresed(event: MouseEvent) {
     const scale = this.spriteService.getScale();
     const rect = this.spriteService.getCanvas().getBoundingClientRect();
@@ -172,6 +175,7 @@ export class PetService {
     return this.collisionService.isPointInsideSprite(this.pet.sprite, mx, my);
   }
 
+  // Setear las animacines
   setAnimation(name: string) {
     if (!this.pet.sprite.animationSprite[name]) return;
     if (this.pet.sprite.currentAnimation === name) return;
@@ -183,5 +187,21 @@ export class PetService {
 
   getAnimationDuration(animationName: string): number {
     return this.animationService.getAnimationDurationFrames(this.pet.sprite, animationName);
+  }
+
+  // Para bajar las estadisticas
+  private updateStats(delta: number) {
+    // convertir ms → s
+    const dt = delta / 1000;
+    for (const stat of this.pet.stats) {
+      if (stat.active) {
+        // Evitar numeros negativos
+        if (stat.porcent > 0) {
+          stat.porcent -= stat.decay * dt;
+        } else {
+          stat.porcent = 0;
+        }
+      }
+    }
   }
 }

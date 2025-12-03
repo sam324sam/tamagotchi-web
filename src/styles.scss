@@ -57,3 +57,10 @@ img {
   image-rendering: pixelated;
   border-radius: 1em;
 }
+
+.pixel-box-s {
+  border: 16px solid transparent;
+  border-image: url('/tamagotchi-web/assets/icon/UI/border-s.png') 16 fill round;
+  image-rendering: pixelated;
+  border-radius: 1em;
+}

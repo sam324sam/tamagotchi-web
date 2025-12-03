@@ -1,6 +1,6 @@
 export interface Stats {
-  hunger: number;
-  energy: number;
-  happiness: number;
-  hygiene: number
+  name: string;
+  porcent: number;
+  decay: number;
+  active: boolean,
 }

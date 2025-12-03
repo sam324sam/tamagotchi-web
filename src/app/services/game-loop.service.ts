@@ -55,7 +55,7 @@ export class GameLoopService {
 
   private update(delta: number) {
     this.animationService.update(delta);
-    this.petService.update();
+    this.petService.update(delta);
   }
 
   private render() {
