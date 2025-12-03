@@ -14,6 +14,7 @@ export class StatsBar {
     return this.petService.pet.stats;
   }
 
+  // 
   roundStat(porcent: number) {
     return Math.round(porcent);
   }
