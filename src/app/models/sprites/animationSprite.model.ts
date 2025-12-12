@@ -5,6 +5,6 @@ export interface AnimationSprite {
 }
 
 export enum AnimationType {
-  Loop = "loop",
-  Once = "once"
+  loop = "loop",
+  once = "once"
 }

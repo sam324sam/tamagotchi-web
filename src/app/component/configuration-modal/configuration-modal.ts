@@ -13,27 +13,20 @@ export class ConfigurationModal implements AfterViewInit {
   @Input() isOpenConfiguration: boolean = false;
   @Output() toggleConfiguration = new EventEmitter<boolean>();
 
-  colors: Color[] = [];
-  selectedColor: Color = { name: '', color: '' };
-
   constructor(private readonly petService: PetService, private readonly dataService: DataService) {}
 
   ngAfterViewInit() {
     this.colors = this.petService.colors;
-
-    // Esperar a que la mascota esté lista
-    if (this.petService.pet?.sprite) {
+    console.log('color de la mascota', this.colors);
+    setTimeout(() => {
       this.selectedColor = this.petService.pet.sprite.color;
-    } else {
-      // Puede que aún no esté cargada; usar setTimeout o Promise
-      const interval = setInterval(() => {
-        if (this.petService.pet?.sprite) {
-          this.selectedColor = this.petService.pet.sprite.color;
-          clearInterval(interval);
-        }
-      }, 50);
-    }
+    }, 100);
   }
+
+  // seccion del color
+  colors: Color[] = [];
+  selectedColor: Color = { name: '', color: '' };
+  isColorSectionOpen = false;
 
   selectColor(color: Color) {
     this.selectedColor = color;
@@ -41,7 +34,12 @@ export class ConfigurationModal implements AfterViewInit {
 
   close() {
     this.isOpenConfiguration = false;
+    this.isColorSectionOpen = false;
     this.toggleConfiguration.emit(false);
+  }
+
+  toggleColorSection() {
+    this.isColorSectionOpen = !this.isColorSectionOpen;
   }
 
   apply() {

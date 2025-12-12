@@ -29,32 +29,21 @@ export class SpriteService {
     this.canvas.style.imageRendering = 'pixelated';
     this.canvas.style.imageRendering = '-moz-crisp-edges';
     this.canvas.style.imageRendering = 'crisp-edges';
+    // Desactivar suavizado en el contexto
+    this.ctx.imageSmoothingEnabled = false;
 
     // Ajustar tamaño inicial
-    this.resizeCanvas();
+    this.resizeScaleCanvas();
   }
 
-  private resizeCanvas() {
+  resizeScaleCanvas() {
     if (!this.canvas) return;
 
     // Obtener tamaño del contenedor
     const rect = this.canvas.getBoundingClientRect();
 
-    // enteros para evitar blur
+    // enteros para evitar blurthis.canvas.style.imageRendering = 'pixelated';
     const width = Math.floor(rect.width);
-    const height = Math.floor(rect.height);
-
-    // Establecer tamaño interno del canvas (sin DPR por ahora)
-    this.canvas.width = width;
-    this.canvas.height = height;
-
-    // Aplicar estilos CSS para pixel-perfect se me acaban las ideas
-    this.canvas.style.width = width + 'px';
-    this.canvas.style.height = height + 'px';
-    this.canvas.style.imageRendering = 'pixelated';
-
-    // Desactivar suavizado en el contexto
-    this.ctx.imageSmoothingEnabled = false;
 
     // Calcular escala
     this.scaleSprite = width / this.referenceWidth;

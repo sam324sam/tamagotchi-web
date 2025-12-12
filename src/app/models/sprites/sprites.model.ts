@@ -2,7 +2,6 @@ import { AnimationSprite } from './animationSprite.model';
 import { Color } from './color.model';
 
 export interface Sprite {
-  color: Color;
   x: number;
   y: number;
   width: number;
@@ -10,6 +9,7 @@ export interface Sprite {
   scale: number;
   // imagen base opcional
   img: HTMLImageElement;
+  color: Color;
   animationSprite: Record<string, AnimationSprite>;
 
   // índice de animación
