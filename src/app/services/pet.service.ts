@@ -50,7 +50,8 @@ export class PetService {
         // Injeccion de metodos para evitar dependencias circulares solo le paso los metodos que requiere
         (dir) => this.getAnimationDuration(dir), // funcion que devuelve duracion
         (dir) => this.setAnimation(dir), // funcion que cambia animacion
-        (dx, dy) => this.movePet(dx, dy)
+        (dx, dy) => this.movePet(dx, dy),
+        (dx, dy) => this.sumMinusStat(dx, dy)
       );
     }
     this.updateStats(delta);
@@ -132,13 +133,19 @@ export class PetService {
       return;
     }
 
-    this.pet.sprite.currentAnimation = 'tutsitutsi';
-    this.pet.sprite.currentFrame = 0;
-    this.pet.blockMove = true;
-
-    setTimeout(() => {
-      this.pet.blockMove = false;
-    }, this.animationService.getAnimationDuration(this.pet.sprite));
+    // evitar varios clicks y que suba mucho la felicidad
+    if (!this.pet.blockMove) {
+      this.pet.sprite.currentAnimation = 'tutsitutsi';
+      this.pet.sprite.currentFrame = 0;
+      this.pet.blockMove = true;
+      // Ver la stat de felicidad y aumentarla
+      this.sumMinusStat('happiness', 5);
+      console.log('Movimiento bloqueado');
+      setTimeout(() => {
+        this.pet.blockMove = false;
+        console.log('Movimiento desbloqueado');
+      }, this.animationService.getAnimationDuration(this.pet.sprite));
+    }
   }
 
   handleMouseMove(event: MouseEvent) {
@@ -194,15 +201,27 @@ export class PetService {
 
   // Para bajar las estadisticas
   private updateStats(delta: number) {
-    const dt = delta / 1000;
+    if (!this.pet.godMode) {
+      const dt = delta / 1000;
 
-    for (const stat of this.pet.stats) {
-      if (stat.active) {
-        stat.porcent = Math.max(0, stat.porcent - stat.decay * dt);
+      for (const stat of this.pet.stats) {
+        if (stat.active) {
+          stat.porcent = Math.max(0, stat.porcent - stat.decay * dt);
+        }
+      }
+
+      // Ntificacion para aplicar los cambios
+      this.statsChanged.set([...this.pet.stats]);
+    }
+  }
+
+  //Para setear las stats con los porcentajes
+  sumMinusStat(statName: string, numberStat: number) {
+    if (!this.pet.godMode) {
+      const happinessStat = this.pet.stats.find((obj) => obj.name === statName);
+      if (happinessStat) {
+        happinessStat.porcent = Math.min(100, happinessStat.porcent + numberStat);
       }
     }
-
-    // Ntificacion para aplicar los cambios
-    this.statsChanged.set([...this.pet.stats]);
   }
 }

@@ -3,9 +3,9 @@
   [ngClass]="isOpenHeader ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
 >
   <header
-    class="text-slate-50 py-6 px-6 flex justify-between items-center cursor-auto bg-slate-700"
+    class="text-slate-50 py-3 sm:py-6 px-6 flex justify-between items-center cursor-auto bg-slate-700"
   >
-    <h1 class="text-4xl font-semibold select-none">Tamagotchi Web</h1>
+    <h1 class="sm:text-4xl font-semibold select-none">Tamagotchi Web</h1>
 
     <nav class="flex gap-4 items-center">
       <a
@@ -13,7 +13,7 @@
         class="hover:scale-110 transition-transform duration-200"
         (click)="toggleConfiguration($event)"
       >
-        <img src="assets/icon/configuration.png" alt="Config" class="w-16 h-16 select-none" />
+        <img src="assets/icon/configuration.png" alt="Config" class="sm:w-16 sm:h-16 select-none" />
       </a>
     </nav>
   </header>

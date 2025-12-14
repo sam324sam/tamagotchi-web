@@ -9,7 +9,7 @@ export class PetIaService {
   private moving = false;
   private direction: 'left' | 'right' | 'up' | 'down' | 'idle' = 'idle';
   // pixeles por frame
-  private readonly speed = 1; 
+  private readonly speed = 1;
 
   private targetDistance = 0;
   private movedDistance = 0;
@@ -27,7 +27,8 @@ export class PetIaService {
     pet: Pet,
     getAnimationDuration: (dir: string) => number,
     setAnimation: (dir: string) => void,
-    movePet: (dx: number, dy: number) => void
+    movePet: (dx: number, dy: number) => void,
+    sumMinusStat: (dx: any, dy: any) => void
   ) {
     if (!pet.sprite) return;
 
@@ -87,6 +88,7 @@ export class PetIaService {
 
     if (this.movedDistance >= this.targetDistance) {
       this.stop();
+      sumMinusStat('energy', -3);
     }
   }
 

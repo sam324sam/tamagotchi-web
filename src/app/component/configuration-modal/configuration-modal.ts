@@ -1,8 +1,10 @@
 // configuration-modal.component.ts
 import { Component, EventEmitter, Input, Output, AfterViewInit } from '@angular/core';
+// servicios
 import { PetService } from '../../services/pet.service';
-import { Color } from '../../models/sprites/color.model';
 import { DataService } from '../../services/data.service';
+// modelo
+import { Color } from '../../models/sprites/color.model';
 
 @Component({
   selector: 'app-configuration-modal',
@@ -13,7 +15,7 @@ export class ConfigurationModal implements AfterViewInit {
   @Input() isOpenConfiguration: boolean = false;
   @Output() toggleConfiguration = new EventEmitter<boolean>();
 
-  constructor(private readonly petService: PetService, private readonly dataService: DataService) {}
+  constructor(readonly petService: PetService, private readonly dataService: DataService) {}
 
   ngAfterViewInit() {
     this.colors = this.petService.colors;
@@ -60,5 +62,15 @@ export class ConfigurationModal implements AfterViewInit {
       this.petService.pet.sprite.color = this.selectedColor;
     }
     this.close();
+  }
+
+  // Apartado de los trucos
+  getGodMode() {
+    return this.petService.pet.godMode;
+  }
+  setGodMode(event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.petService.pet.godMode = checked;
+    console.log("modo dios en", this.petService.pet.godMode)
   }
 }

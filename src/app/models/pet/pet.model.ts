@@ -6,6 +6,6 @@ export interface Pet {
   sprite: Sprite;
   isGrab: boolean;
   blockMove: boolean;
-
+  godMode: boolean;
   stats: Stats[];
 }
