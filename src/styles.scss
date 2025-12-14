@@ -62,10 +62,10 @@ img {
 }
 
 .pixel-box-s {
-  border: 16px solid transparent;
-  border-image: url('/tamagotchi-web/assets/icon/UI/border-s.png') 16 fill round;
+  border: 8px solid transparent;
+  border-image: url('/tamagotchi-web/assets/icon/UI/border-s.png') 8 fill round;
   image-rendering: pixelated;
-  border-radius: 1em;
+  border-radius: 0.5em;
 }
 
 // Scroll

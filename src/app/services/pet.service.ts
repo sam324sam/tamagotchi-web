@@ -4,6 +4,7 @@ import { Pet } from '../models/pet/pet.model';
 import { AnimationSprite } from '../models/sprites/animationSprite.model';
 import { AnimationSet } from '../models/sprites/animation-set.model';
 import { Stats } from '../models/pet/stats.model';
+import { Color } from '../models/sprites/color.model';
 // Servicios
 import { CollisionService } from './collision.service';
 import { SpriteService } from './sprites.service';
@@ -13,16 +14,7 @@ import { PetIaService } from './pet-ia.service';
 
 @Injectable({ providedIn: 'root' })
 export class PetService {
-  readonly colors = [
-    { name: 'azul suave', color: 'rgba(80, 120, 255, 0.25)' },
-    { name: 'rojo suave', color: 'rgba(255, 80, 80, 0.25)' },
-    { name: 'verde suave', color: 'rgba(80, 255, 150, 0.25)' },
-    { name: 'amarillo suave', color: 'rgba(255, 230, 80, 0.25)' },
-    { name: 'naranja suave', color: 'rgba(255, 150, 80, 0.25)' },
-    { name: 'morado suave', color: 'rgba(180, 80, 255, 0.25)' },
-    { name: 'blanco suave', color: 'rgba(255, 255, 255, 0.15)' },
-    { name: 'gris suave', color: 'rgba(120, 120, 120, 0.15)' },
-  ];
+  colors: Color[] = [];
 
   pet: Pet = {} as Pet;
   // Para el ui de stats
@@ -64,6 +56,7 @@ export class PetService {
 
   initPetService(scale: number) {
     this.pet = this.dataService.getPet();
+    this.colors = this.dataService.getColors();
 
     // la escala que de el sprite service
     this.pet.sprite.scale = scale;

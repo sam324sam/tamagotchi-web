@@ -1,12 +1,12 @@
 {
   "colors": [
-    { "name": "Azul suave", "color": "rgba(80, 120, 255, 0.25)" },
-    { "name": "Rojo suave", "color": "rgba(255, 80, 80, 0.25)" },
-    { "name": "Verde suave", "color": "rgba(80, 255, 150, 0.25)" },
-    { "name": "Amarillo suave", "color": "rgba(255, 230, 80, 0.25)" },
-    { "name": "Naranja suave", "color": "rgba(255, 150, 80, 0.25)" },
-    { "name": "Morado suave", "color": "rgba(180, 80, 255, 0.25)" },
-    { "name": "Blanco suave", "color": "rgba(255, 255, 255, 0.15)" },
-    { "name": "Gris suave", "color": "rgba(120, 120, 120, 0.15)" }
+    { "name": "Azul", "color": "rgba(80, 120, 255, 0.25)" },
+    { "name": "Rojo", "color": "rgba(255, 80, 80, 0.25)" },
+    { "name": "Verde", "color": "rgba(80, 255, 150, 0.25)" },
+    { "name": "Amarillo", "color": "rgba(255, 230, 80, 0.25)" },
+    { "name": "Naranja", "color": "rgba(255, 150, 80, 0.25)" },
+    { "name": "Morado", "color": "rgba(180, 80, 255, 0.25)" },
+    { "name": "Blanco", "color": "rgba(255, 255, 255, 0.15)" },
+    { "name": "Gris", "color": "rgba(120, 120, 120, 0.15)" }
   ]
 }

@@ -59,6 +59,10 @@ export class DataService {
     return this.pet;
   }
 
+  getColors(): Color[]{
+    return this.colors;
+  }
+
   // Devuelve las animaciones de la mascota
   getAnimations(petId: number): AnimationSet[] {
     return this.animationsCache[petId] || [];
