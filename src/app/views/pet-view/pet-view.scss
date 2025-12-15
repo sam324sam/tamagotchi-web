@@ -1,0 +1,7 @@
+// Cajita de la pet
+.pixel-box-pet {
+  border: 50px solid transparent;
+  border-image: url('/tamagotchi-web/assets/icon/UI/frame-pet.png') 8 fill round;
+  image-rendering: pixelated;
+  border-radius: 5em;
+}

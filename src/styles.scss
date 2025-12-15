@@ -55,15 +55,15 @@ img {
 
 // Cajita
 .pixel-box {
-  border: 16px solid transparent;
-  border-image: url('/tamagotchi-web/assets/icon/UI/border.png') 16 fill round;
+  border: 20px solid transparent;
+  border-image: url('/tamagotchi-web/assets/icon/UI/border.png') 6 fill round;
   image-rendering: pixelated;
   border-radius: 1em;
 }
 
 .pixel-box-s {
   border: 8px solid transparent;
-  border-image: url('/tamagotchi-web/assets/icon/UI/border-s.png') 8 fill round;
+  border-image: url('/tamagotchi-web/assets/icon/UI/border-s.png') 6 fill round;
   image-rendering: pixelated;
   border-radius: 0.5em;
 }
