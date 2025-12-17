@@ -1,7 +1,14 @@
-<app-header class="fixed top-0 left-0 w-full z-50"></app-header>
-
-<div class="flex flex-col h-dvh pt-9 bg-gray-500">
-  <div class="flex flex-1 overflow-hidden">
-    <app-pet-view class="flex-1"></app-pet-view>
+<div class="flex w-full h-dvh items-center justify-center">
+  <!-- CARCASA -->
+  <div class="console-body w-[85%] h-[90dvh]">
+    <!-- MARCO DE PANTALLA -->
+    <div class="console-frame flex flex-col w-full h-full gap-2">
+      <app-header class="w-full"></app-header>
+      <!-- contenido de la pet o del inicio -->
+      <div class="console-screen flex-1 w-[70%] h-[70%] sm:w-[50%] sm:h-[50%] ml-auto mr-auto bg-black">
+        <app-pet-view></app-pet-view>
+      </div>
+      <app-stats-bar class="mb-1"></app-stats-bar>
+    </div>
   </div>
 </div>

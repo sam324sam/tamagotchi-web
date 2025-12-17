@@ -4,29 +4,26 @@ import { Sprite } from '../models/sprites/sprites.model';
 
 @Injectable({ providedIn: 'root' })
 export class CollisionService {
-  // CORREGIDO: Ahora considera la escala del sprite
+  // Ahora considera la escala del sprite
   isPointInsideSprite(sprite: Sprite, x: number, y: number): boolean {
     const sx = sprite.x;
     const sy = sprite.y;
-    
-    // IMPORTANTE: Usar las dimensiones reales del sprite (sin escalar)
-    // porque las coordenadas x, y ya están en el sistema sin escala
+
     const sw = sprite.width;
     const sh = sprite.height;
 
     const isInside = x >= sx && x <= sx + sw && y >= sy && y <= sy + sh;
-    
-    // DEBUG: Descomentar para ver valores
-    // console.log('Click detection:', {
-    //   mouseX: x.toFixed(2),
-    //   mouseY: y.toFixed(2),
-    //   spriteX: sx.toFixed(2),
-    //   spriteY: sy.toFixed(2),
-    //   spriteW: sw,
-    //   spriteH: sh,
-    //   isInside
-    // });
-    
+
+    console.log('Click detection:', {
+      mouseX: x.toFixed(2),
+      mouseY: y.toFixed(2),
+      spriteX: sx.toFixed(2),
+      spriteY: sy.toFixed(2),
+      spriteW: sw,
+      spriteH: sh,
+      isInside,
+    });
+
     return isInside;
   }
 

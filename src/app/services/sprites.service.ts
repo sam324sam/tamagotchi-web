@@ -1,8 +1,5 @@
-// sprite.service.ts
 import { Injectable } from '@angular/core';
-// modelo
 import { Sprite } from '../models/sprites/sprites.model';
-// Servicios
 import { AnimationService } from './animation.service';
 
 @Injectable({ providedIn: 'root' })
@@ -10,81 +7,101 @@ export class SpriteService {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   private readonly sprites: Sprite[] = [];
-  private scaleSprite: number = 1;
-  private referenceWidth: number = 300;
 
-  constructor(
-    private readonly animationService: AnimationService
-  ) {}
+  // Resolución lógica fija
+  private readonly BASE_WIDTH = 200;
+  private readonly BASE_HEIGHT = 200;
+  spriteScale = 4;
+
+  constructor(private readonly animationService: AnimationService) {}
 
   init(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
-
-    // Desactivar suavizado para pixel art
     this.ctx.imageSmoothingEnabled = false;
 
-    this.canvas.style.imageRendering = 'pixelated';
-    this.canvas.style.imageRendering = '-moz-crisp-edges';
-    this.canvas.style.imageRendering = 'crisp-edges';
-    // Desactivar suavizado en el contexto
-    this.ctx.imageSmoothingEnabled = false;
-    // Ajustar tamaño inicial
-    this.resizeScaleCanvas(canvas);
+    // Tamaño lógico fijo
+    this.canvas.width = this.BASE_WIDTH;
+    this.canvas.height = this.BASE_HEIGHT;
+
+    // Ajuste inicial
+    this.resizeCanvas();
+
+    // Ajustar automáticamente al cambiar tamaño del contenedor
+    window.addEventListener('resize', () => this.resizeCanvas());
   }
 
-  resizeScaleCanvas(canvas: HTMLCanvasElement) {
-    if (!this.canvas) return;
+  resizeCanvas() {
+    const container = this.canvas.parentElement;
+    if (!container) return;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
 
-    // Obtener tamaño del contenedor
-    const rect = this.canvas.getBoundingClientRect();
-
-    // enteros para evitar blurthis.canvas.style.imageRendering = 'pixelated';
-    const width = Math.floor(rect.width);
-    if (width <= 500) {
-      this.referenceWidth = 100;
+    if (container.clientWidth <= 600) {
+      this.spriteScale = 3;
     }
 
-    // Calcular escala
-    this.scaleSprite = width / this.referenceWidth;
+    if (containerWidth === 0 || containerHeight === 0) {
+      requestAnimationFrame(() => this.resizeCanvas());
+      return;
+    }
+
+    const scale = Math.min(containerWidth / this.BASE_WIDTH, containerHeight / this.BASE_HEIGHT);
+
+    this.canvas.style.width = `${this.BASE_WIDTH * scale}px`;
+    this.canvas.style.height = `${this.BASE_HEIGHT * scale}px`;
+
+    // Buffer = tamaño lógico
+    this.canvas.width = this.BASE_WIDTH;
+    this.canvas.height = this.BASE_HEIGHT;
+
+    this.ctx.imageSmoothingEnabled = false;
   }
 
-  addSprite(sprite: any) {
+  addSprite(sprite: Sprite) {
     this.sprites.push(sprite);
     this.animationService.addSprite(sprite);
   }
 
   render() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     for (const sprite of this.sprites) {
       const frame = this.animationService.getFrame(sprite);
       if (!frame) return;
 
       this.limitToCanvas(sprite);
+      this.ctx.imageSmoothingEnabled = false;
 
-      const x = sprite.x * this.scaleSprite;
-      const y = sprite.y * this.scaleSprite;
-      const w = sprite.width * this.scaleSprite;
-      const h = sprite.height * this.scaleSprite;
-
-      this.ctx.drawImage(frame, x, y, w, h);
+      this.ctx.drawImage(
+        frame,
+        sprite.x,
+        sprite.y,
+        sprite.width * this.spriteScale,
+        sprite.height * this.spriteScale
+      );
 
       if (sprite.color) {
         this.ctx.globalCompositeOperation = 'source-atop';
         this.ctx.fillStyle = sprite.color.color;
-        this.ctx.fillRect(x, y, w, h);
+        this.ctx.fillRect(
+          sprite.x,
+          sprite.y,
+          sprite.width * this.spriteScale,
+          sprite.height * this.spriteScale
+        );
         this.ctx.globalCompositeOperation = 'source-over';
       }
     }
   }
 
   limitToCanvas(sprite: Sprite) {
-    const realWidth = sprite.width * this.scaleSprite;
-    const realHeight = sprite.height * this.scaleSprite;
+    const realWidth = sprite.width * this.spriteScale;
+    const realHeight = sprite.height * this.spriteScale;
 
     // Convertir limites reales a coordenadas internas del canvas
-    const maxX = (this.canvas.width - realWidth) / this.scaleSprite;
-    const maxY = (this.canvas.height - realHeight) / this.scaleSprite;
+    const maxX = this.canvas.width - realWidth;
+    const maxY = this.canvas.height - realHeight;
 
     // Limitar dentro del canvas interno
     if (sprite.x < 0) sprite.x = 0;
@@ -92,10 +109,6 @@ export class SpriteService {
 
     if (sprite.x > maxX) sprite.x = maxX;
     if (sprite.y > maxY) sprite.y = maxY;
-  }
-
-  getScale() {
-    return this.scaleSprite;
   }
 
   getCanvas() {

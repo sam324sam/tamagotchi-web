@@ -1,11 +1,9 @@
 import { Injectable, signal } from '@angular/core';
-// modelos
 import { Pet } from '../models/pet/pet.model';
-import { AnimationSprite } from '../models/sprites/animationSprite.model';
 import { AnimationSet } from '../models/sprites/animation-set.model';
 import { Stats } from '../models/pet/stats.model';
 import { Color } from '../models/sprites/color.model';
-// Servicios
+
 import { CollisionService } from './collision.service';
 import { SpriteService } from './sprites.service';
 import { AnimationService } from './animation.service';
@@ -15,17 +13,20 @@ import { PetIaService } from './pet-ia.service';
 @Injectable({ providedIn: 'root' })
 export class PetService {
   colors: Color[] = [];
-
   pet: Pet = {} as Pet;
-  // Para el ui de stats
+
   statsChanged = signal<Stats[]>([]);
   animations: AnimationSet[] = [];
-  activeIa: boolean = true;
+  activeIa = true;
 
   private pressTimer: any = null;
   private readonly LONG_PRESS = 250;
+
   private pointerOffsetX = 0;
   private pointerOffsetY = 0;
+
+  private readonly BASE_WIDTH = 200;
+  private readonly BASE_HEIGHT = 200;
 
   constructor(
     private readonly collisionService: CollisionService,
@@ -39,9 +40,8 @@ export class PetService {
     if (this.activeIa) {
       this.petIaService.update(
         this.pet,
-        // Injeccion de metodos para evitar dependencias circulares solo le paso los metodos que requiere
-        (dir) => this.getAnimationDuration(dir), // funcion que devuelve duracion
-        (dir) => this.setAnimation(dir), // funcion que cambia animacion
+        (dir) => this.getAnimationDuration(dir),
+        (dir) => this.setAnimation(dir),
         (dx, dy) => this.movePet(dx, dy),
         (dx, dy) => this.sumMinusStat(dx, dy)
       );
@@ -54,20 +54,13 @@ export class PetService {
     this.pet.sprite.y += dy;
   }
 
-  initPetService(scale: number) {
+  initPetService() {
     this.pet = this.dataService.getPet();
     this.colors = this.dataService.getColors();
 
-    // la escala que de el sprite service
-    this.pet.sprite.scale = scale;
-
-    // cargar animaciones
-    const animations = this.dataService.getAnimations(this.pet.id);
-    this.animations = animations;
-
-    this.animationService.loadAnimations(this.pet, animations);
+    this.animations = this.dataService.getAnimations(this.pet.id);
+    this.animationService.loadAnimations(this.pet, this.animations);
     this.loadAnimations();
-    console.log('pet:', this.pet);
   }
 
   private loadAnimations() {
@@ -75,47 +68,49 @@ export class PetService {
       const frames: HTMLImageElement[] = [];
 
       for (let i = 0; i < anim.frames; i++) {
-        const frameImg = new Image();
-        frameImg.src = `${anim.baseUrl}pixil-frame-${i}.png`;
-        frames.push(frameImg);
+        const img = new Image();
+        img.src = `${anim.baseUrl}pixil-frame-${i}.png`;
+        frames.push(img);
       }
 
-      const animation: AnimationSprite = {
+      this.pet.sprite.animationSprite[anim.name] = {
         frameImg: frames,
         animationType: anim.animationType,
       };
-
-      this.pet.sprite.animationSprite[anim.name] = animation;
     }
   }
 
-  getMousePos(scale: number, evt: MouseEvent) {
-    const rect = (evt.target as HTMLCanvasElement).getBoundingClientRect();
+  // pocision del canvas
+  getMousePos(evt: MouseEvent) {
+    const canvas = this.spriteService.getCanvas();
+    const rect = canvas.getBoundingClientRect();
+
+    // Convertir de CSS a canvas logico (200×200)
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
     return {
-      x: (evt.clientX - rect.left) / scale,
-      y: (evt.clientY - rect.top) / scale,
+      x: (evt.clientX - rect.left) * scaleX,
+      y: (evt.clientY - rect.top) * scaleY,
     };
   }
 
   handlePressDown(event: MouseEvent) {
-    const scale = this.spriteService.getScale();
-    const rect = this.spriteService.getCanvas().getBoundingClientRect();
-
-    if (!this.isPetPresed(event)) {
-      return;
-    }
+    if (!this.isPetPressed(event)) return;
 
     this.clearPressTimer();
 
     this.pressTimer = setTimeout(() => {
       this.pet.isGrab = true;
 
-      // Calcular offset correctamente
-      const mouseX = (event.clientX - rect.left) / scale;
-      const mouseY = (event.clientY - rect.top) / scale;
+      const mouse = this.getMousePos(event);
 
-      this.pointerOffsetX = mouseX - this.pet.sprite.x;
-      this.pointerOffsetY = mouseY - this.pet.sprite.y;
+      // Pasar a coordenadas logicas
+      const logicalX = mouse.x / this.spriteService.spriteScale;
+      const logicalY = mouse.y / this.spriteService.spriteScale;
+
+      this.pointerOffsetX = logicalX - this.pet.sprite.x;
+      this.pointerOffsetY = logicalY - this.pet.sprite.y;
 
       this.pet.sprite.currentAnimation = 'grab';
       this.pet.sprite.currentFrame = 0;
@@ -124,23 +119,19 @@ export class PetService {
 
   handlePressUp(event: MouseEvent) {
     this.clearPressTimer();
-
     this.pet.isGrab = false;
-    if (!this.isPetPresed(event)) {
-      return;
-    }
 
-    // evitar varios clicks y que suba mucho la felicidad
+    if (!this.isPetPressed(event)) return;
+
     if (!this.pet.blockMove) {
       this.pet.sprite.currentAnimation = 'tutsitutsi';
       this.pet.sprite.currentFrame = 0;
       this.pet.blockMove = true;
-      // Ver la stat de felicidad y aumentarla
+
       this.sumMinusStat('happiness', 5);
-      console.log('Movimiento bloqueado');
+
       setTimeout(() => {
         this.pet.blockMove = false;
-        console.log('Movimiento desbloqueado');
       }, this.animationService.getAnimationDuration(this.pet.sprite));
     }
   }
@@ -148,29 +139,39 @@ export class PetService {
   handleMouseMove(event: MouseEvent) {
     if (!this.pet.isGrab) return;
 
-    const canvas = this.spriteService.getCanvas();
-    const rect = canvas.getBoundingClientRect();
-    const scale = this.spriteService.getScale();
+    const mouse = this.getMousePos(event);
 
-    // Convertir coordenadas del mouse a coordenadas del canvas
-    const mouseX = (event.clientX - rect.left) / scale;
-    const mouseY = (event.clientY - rect.top) / scale;
+    // Coordenadas logicas
+    const logicalX = mouse.x / this.spriteService.spriteScale;
+    const logicalY = mouse.y / this.spriteService.spriteScale;
 
-    const newX = mouseX - this.pointerOffsetX;
-    const newY = mouseY - this.pointerOffsetY;
+    const newX = logicalX - this.pointerOffsetX;
+    const newY = logicalY - this.pointerOffsetY;
 
-    // Calcular límites en coordenadas internas
-    const maxX = canvas.width / scale - this.pet.sprite.width;
-    const maxY = canvas.height / scale - this.pet.sprite.height;
+    const maxX = this.BASE_WIDTH - this.pet.sprite.width;
+    const maxY = this.BASE_HEIGHT - this.pet.sprite.height;
 
-    const clampedX = Math.max(0, Math.min(newX, maxX));
-    const clampedY = Math.max(0, Math.min(newY, maxY));
-
-    this.pet.sprite.x = clampedX;
-    this.pet.sprite.y = clampedY;
+    this.pet.sprite.x = Math.max(0, Math.min(newX, maxX));
+    this.pet.sprite.y = Math.max(0, Math.min(newY, maxY));
   }
 
-  // quitar el timer al parar de precionar
+  // Cuando se preciona la mascota
+  isPetPressed(event: MouseEvent): boolean {
+    const mouse = this.getMousePos(event);
+
+    // Ahora ambos estan en el espacio logico 200×200
+    const sprite = this.pet.sprite;
+    const scaledWidth = sprite.width * this.spriteService.spriteScale;
+    const scaledHeight = sprite.height * this.spriteService.spriteScale;
+
+    return (
+      mouse.x >= sprite.x &&
+      mouse.x <= sprite.x + scaledWidth &&
+      mouse.y >= sprite.y &&
+      mouse.y <= sprite.y + scaledHeight
+    );
+  }
+
   clearPressTimer() {
     if (this.pressTimer) {
       clearTimeout(this.pressTimer);
@@ -178,35 +179,6 @@ export class PetService {
     }
   }
 
-  // Cuando es precionada la mascta
-  isPetPresed(event: MouseEvent): boolean {
-    const scale = this.spriteService.getScale();
-    const canvas = this.spriteService.getCanvas();
-    const rect = canvas.getBoundingClientRect();
-
-    // Convertir coordenadas del mouse a coordenadas del canvas (sin escala)
-    const mx = (event.clientX - rect.left) / scale;
-    const my = (event.clientY - rect.top) / scale;
-
-    // DEBUG: Descomentar para ver valores en consola
-    console.log('isPetPresed:', {
-      clientX: event.clientX,
-      clientY: event.clientY,
-      rectLeft: rect.left,
-      rectTop: rect.top,
-      scale: scale,
-      mx: mx.toFixed(2),
-      my: my.toFixed(2),
-      petX: this.pet.sprite.x.toFixed(2),
-      petY: this.pet.sprite.y.toFixed(2),
-      petW: this.pet.sprite.width,
-      petH: this.pet.sprite.height,
-    });
-
-    return this.collisionService.isPointInsideSprite(this.pet.sprite, mx, my);
-  }
-
-  // Setear las animacines
   setAnimation(name: string) {
     if (!this.pet.sprite.animationSprite[name]) return;
     if (this.pet.sprite.currentAnimation === name) return;
@@ -220,29 +192,26 @@ export class PetService {
     return this.animationService.getAnimationDurationFrames(this.pet.sprite, animationName);
   }
 
-  // Para bajar las estadisticas
   private updateStats(delta: number) {
-    if (!this.pet.cheats.godMode) {
-      const dt = delta / 1000;
+    if (this.pet.cheats.godMode) return;
 
-      for (const stat of this.pet.stats) {
-        if (stat.active) {
-          stat.porcent = Math.max(0, stat.porcent - stat.decay * dt);
-        }
+    const dt = delta / 1000;
+
+    for (const stat of this.pet.stats) {
+      if (stat.active) {
+        stat.porcent = Math.max(0, stat.porcent - stat.decay * dt);
       }
-
-      // Ntificacion para aplicar los cambios
-      this.statsChanged.set([...this.pet.stats]);
     }
+
+    this.statsChanged.set([...this.pet.stats]);
   }
 
-  //Para setear las stats con los porcentajes
-  sumMinusStat(statName: string, numberStat: number) {
-    if (!this.pet.cheats.godMode) {
-      const happinessStat = this.pet.stats.find((obj) => obj.name === statName);
-      if (happinessStat) {
-        happinessStat.porcent = Math.min(100, happinessStat.porcent + numberStat);
-      }
+  sumMinusStat(statName: string, value: number) {
+    if (this.pet.cheats.godMode) return;
+
+    const stat = this.pet.stats.find((s) => s.name === statName);
+    if (stat) {
+      stat.porcent = Math.min(100, stat.porcent + value);
     }
   }
 }

@@ -1,17 +1,15 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { PetView } from './views/pet-view/pet-view';
 import { Header } from './component/header/header';
+import { StatsBar } from "./component/stats-bar/stats-bar";
 
 @Component({
   selector: 'app-root',
-  imports: [PetView, Header],
+  imports: [PetView, Header, StatsBar],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App implements OnInit{
+export class App{
   protected readonly title = signal('tamagotchi-web');
 
-  ngOnInit() {
-      
-  }
 }
