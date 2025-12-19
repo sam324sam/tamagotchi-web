@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "tamagotchi-web": {
+    "Mokito-web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -33,12 +33,12 @@
               "src/tailwind.css",
               "src/styles.scss"
             ],
-            "outputPath": "dist/tamagotchi-web",
-            "baseHref": "/tamagotchi-web/"
+            "outputPath": "dist/Mokito-web",
+            "baseHref": "/Mokito-web/"
           },
           "configurations": {
             "production": {
-              "baseHref": "/tamagotchi-web/",
+              "baseHref": "/Mokito-web/",
               "budgets": [
                 {
                   "type": "initial",
@@ -65,10 +65,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "tamagotchi-web:build:production"
+              "buildTarget": "Mokito-web:build:production"
             },
             "development": {
-              "buildTarget": "tamagotchi-web:build:development"
+              "buildTarget": "Mokito-web:build:development"
             }
           },
           "defaultConfiguration": "development"

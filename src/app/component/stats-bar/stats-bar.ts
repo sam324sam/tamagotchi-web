@@ -22,8 +22,8 @@ export class StatsBar {
   }
 
   getColor(porcent: number): string {
-    if (porcent > 70) return '#00a300';
-    if (porcent > 40) return '#ffff00';
-    return '#ff0000';
+    if (porcent > 70) return '#009800ff';
+    if (porcent > 40) return '#b2b200ff';
+    return '#990000ff';
   }
 }

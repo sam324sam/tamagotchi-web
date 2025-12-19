@@ -40,10 +40,6 @@ export class SpriteService {
       this.spriteScale = 1;
     }
 
-    // Buffer = tamaño logico
-    this.canvas.width = this.BASE_WIDTH;
-    this.canvas.height = this.BASE_HEIGHT;
-
     this.ctx.imageSmoothingEnabled = false;
   }
 

@@ -1,5 +1,5 @@
 {
-  "name": "tamagotchi-web",
+  "name": "mokito-web",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng build --configuration production --base-href=https://sam324sam.github.io/tamagotchi-web/ && npx angular-cli-ghpages --dir=dist/tamagotchi-web/browser"
+    "deploy": "ng build --configuration production --base-href=https://sam324sam.github.io/Mokito-web/ && npx angular-cli-ghpages --dir=dist/Mokito-web/browser"
   },
   "prettier": {
     "printWidth": 100,

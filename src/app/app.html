@@ -1,14 +1,18 @@
 <div class="flex w-full h-dvh items-center justify-center">
-  <!-- CARCASA -->
-  <div class="console-body w-[85%] p-0 h-[90dvh] bg-[#b9b287]">
-    <!-- MARCO DE PANTALLA -->
-    <div class="console-frame flex flex-col w-full h-full gap-2">
-      <app-header class="w-full"></app-header>
+  <!-- Carcasa -->
+  <div class="console-body w-[85%] h-[90dvh]">
+    <!-- Dentro de la consola -->
+    <div class="console-frame sm:flex w-full h-full gap-2 p-4">
+      <app-header class="sm:w-[20%] w-full"></app-header>
       <!-- contenido de la pet o del inicio -->
-      <div class="console-screen flex-1 w-[70%] h-[65%] ml-auto mr-auto">
-        <app-pet-view></app-pet-view>
+      <div class="flex flex-1 flex-col justify-center gap-3">
+        <div
+          class="console-screen flex sm:w-[90%] sm:h-[90%] w-[85%] h-[90%] ml-auto mr-auto sm:ml-0 sm:mr-0"
+        >
+          <app-pet-view class="w-full h-full"></app-pet-view>
+        </div>
+        <app-stats-bar></app-stats-bar>
       </div>
-      <app-stats-bar class="mb-1"></app-stats-bar>
     </div>
   </div>
 </div>

@@ -30,12 +30,12 @@ jobs:
         run: npm ci
 
       - name: Build Angular (production)
-        run: npm run build -- --configuration production --base-href=/tamagotchi-web/
+        run: npm run build -- --configuration production --base-href=/Mokito-web/
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist/tamagotchi-web/browser
+          folder: dist/Mokito-web/browser
           branch: gh-pages
           clean: true
           token: ${{ secrets.GITHUB_TOKEN }}
